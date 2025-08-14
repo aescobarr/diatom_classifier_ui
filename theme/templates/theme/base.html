@@ -1,0 +1,108 @@
+{% load static tailwind_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block title %}
+    <title>Django Tailwind</title>
+    {% endblock %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    {% tailwind_css %}
+    <link href="{% static 'classifier/javascript/node_modules/toastr/build/toastr.css' %}" rel="stylesheet"/>
+    {% block extra_css %}
+    {% endblock %}
+</head>
+
+<body class="h-full">
+  <div class="min-h-full">
+  <nav class="bg-gray-800/50">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex h-16 items-center justify-between">
+        <div class="flex items-center">
+          <div class="shrink-0">
+            <img src="https://avatars.githubusercontent.com/u/207049787?s=200&v=4" alt="Your Company" class="size-8" />
+          </div>
+          <div class="hidden md:block">
+            <div class="ml-10 flex items-baseline space-x-4">
+              <!-- Current: "bg-gray-950/50 text-white", Default: "text-gray-300 hover:bg-white/5 hover:text-white" -->
+              <!--<a href="{% url 'index' %}" aria-current="page" class="rounded-md bg-gray-950/50 px-3 py-2 text-sm font-medium text-white">Classifier</a>
+              <a href="{% url 'about' %}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white">About</a>-->
+              <a href="{% url 'index' %}" aria-current="page" class="rounded-md px-3 py-2 text-sm font-medium {% if request.resolver_match.url_name == 'index' %}menu-item-selected{% else %}menu-item{% endif %}">Classifier</a>
+              <a href="{% url 'about' %}" class="rounded-md px-3 py-2 text-sm font-medium {% if request.resolver_match.url_name == 'about' %}menu-item-selected{% else %}menu-item{% endif %}">About</a>
+            </div>
+          </div>
+        </div>
+        <div class="-mr-2 flex md:hidden">
+          <!-- Mobile menu button -->
+          <button id="mobile_button" type="button" command="--toggle" commandfor="mobile-menu" class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-white/5 hover:text-white focus:outline-2 focus:outline-offset-2 focus:outline-indigo-500">
+            <span class="absolute -inset-0.5"></span>
+            <span class="sr-only">Open main menu</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="size-6 in-aria-expanded:hidden">
+              <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="size-6 not-in-aria-expanded:hidden">
+              <path d="M6 18 18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <el-disclosure id="mobile-menu" hidden class="block md:hidden">
+      <div class="space-y-1 px-2 pt-2 pb-3 sm:px-3">
+        <!-- Current: "bg-gray-950/50 text-white", Default: "text-gray-300 hover:bg-white/5 hover:text-white" -->
+        <a href="{% url 'index' %}" aria-current="page" class="block rounded-md px-3 py-2 text-base font-medium {% if request.resolver_match.url_name == 'index' %}menu-item-selected{% else %}menu-item{% endif %}">Classifier</a>
+        <a href="{% url 'about' %}" class="block rounded-md px-3 py-2 text-base font-medium {% if request.resolver_match.url_name == 'about' %}menu-item-selected{% else %}menu-item{% endif %}">About</a>
+      </div>
+    </el-disclosure>
+  </nav>
+      {% block header %}
+      {% endblock %}
+  <main>
+    <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <!-- Your content -->
+        {% block content %}
+      <div class="flex flex-row h-auto flex-wrap">
+        <div class="w-100 flex-auto mt-8">
+          <div class="flex flex-row h-auto flex-wrap">
+            <div class="w-100 flex-auto">
+              <select id="model_select" class="select select-primary">
+                <option disabled selected>Select a training model</option>
+                {% for model in models %}
+                <option id="{{ model.id }}" data-description="{{ model.description }}">{{ model }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div style="display:none;" id="card_all" class="w-100 flex-auto">
+              <div class="card-body">
+                <h2 id="card_title" class="card-title">Title</h2>
+                <p id="card_description">Description</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="w-100 flex-auto">
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Pick a *.zip file containing the images to be classified</legend>
+            <input id="fileinput" type="file" class="file-input" accept=".zip"/>
+          </fieldset>
+        </div>
+        <div class="w-100 flex-auto mt-8">
+          <button id="run_btn" class="btn btn-primary">Run classification!</button>
+        </div>
+      </div>
+        {% endblock %}
+    </div>
+  </main>
+</div>
+
+</body>
+
+<script type="module" src="{% static 'classifier/javascript/node_modules/jquery/dist/jquery.min.js' %}"></script>
+<script type="module" src="{% static 'classifier/javascript/node_modules/toastr/build/toastr.min.js' %}"></script>
+<script type="module" src="{% static 'classifier/javascript/own/interface.js' %}"></script>
+{% block extra_js %}
+{% endblock %}
+</html>

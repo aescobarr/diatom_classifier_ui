@@ -1,0 +1,130 @@
+{% extends "theme/base.html" %}
+{% load static tailwind_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html class="h-full bg-gray-900" lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  {% block title %}
+  <title>Classifier UI</title>
+  {% endblock %}
+  {% tailwind_css %}
+</head>
+      {% block header %}
+      <header class="relative bg-gray-800 after:pointer-events-none after:absolute after:inset-x-0 after:inset-y-0 after:border-y after:border-white/10">
+        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <h1 class="text-3xl font-bold tracking-tight text-white">Classifier</h1>
+        </div>
+      </header>
+      {% endblock %}
+      <!-- Your content -->
+      {% block content %}
+      <div class="flex flex-row h-auto flex-wrap">
+        <div class="w-1/3 flex-auto mt-8">
+          <div class="flex flex-row h-auto flex-wrap">
+            <div class="w-100 flex-auto">
+              <select id="model_select" class="select select-primary">
+                <option disabled selected>Select a training model</option>
+                {% for model in models %}
+                <option id="{{ model.id }}" data-runson="{{ model.runs_on }}" data-description="{{ model.description }}">{{ model }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div style="display:none;" id="card_all" class="w-100 flex-auto">
+              <div class="card-body">
+                <h2 id="card_title" class="card-title">Title</h2>
+                <p id="card_description">Description</p>
+                <p id="card_runson">Runs on</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="w-1/3 flex-auto">
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">Pick a *.zip file containing the images to be classified</legend>
+            <input id="fileinput" type="file" class="file-input" accept=".zip"/>
+          </fieldset>
+        </div>
+        <div class="w-1/3 flex-auto mt-8">
+          <button id="run_btn" class="btn btn-primary">Run classification!</button>
+        </div>
+      </div>
+        <div class="relative overflow-x-auto mt-16">
+            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 table-auto">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="px-6 py-3">
+                            Run timestamp
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Classification model
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Model description
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Trained on
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Data file
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Results file
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Results Summary
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for run in runs %}
+                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
+                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            {{ run.run_at }}
+                        </th>
+                        <td class="px-6 py-4">
+                            {{ run.classification_model }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ run.classification_model.description }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ run.classification_model.runs_on }}
+                        </td>
+                        <td class="px-6 py-4">
+                            <a class="link link-accent" href="{{ run.data_file }}">{{ run.data_file }}</a>
+                        </td>
+                        <td class="px-6 py-4">
+                            <a class="link link-accent" href="{{ run.results_file }}">{{ run.results_file }}</a>
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ run.results_summary }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+      <div id="modal_upload" class="relative" style="display:none;">
+        <div
+          x-show="uploading"
+          class="fixed inset-0 bg-black/60 bg-opacity-50 flex items-center justify-center z-50"
+        >
+        <!-- Spinner -->
+        <div class="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+      </div>
+      </div>
+      {% endblock %}
+
+
+{% block extra_js %}
+  <script>
+      var _ajax_upload_url = "{% url 'ajax_upload' %}";
+      var _ajax_classify = "{% url 'ajax_classify' %}";
+  </script>
+  <script type="module" src="{% static 'classifier/javascript/own/localstorage.js' %}"></script>
+  <script type="module" src="{% static 'classifier/javascript/own/index.js' %}"></script>
+{% endblock %}
+</html>
