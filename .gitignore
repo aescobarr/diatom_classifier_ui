@@ -1,0 +1,4 @@
+venv
+media
+classifier/static/classifier/javascript/node_modules
+.idea
